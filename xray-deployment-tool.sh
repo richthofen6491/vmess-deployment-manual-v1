@@ -307,26 +307,26 @@ getData() {
         fi
         colorEcho ${BLUE}  " xray port：$PORT"
     else
-        read -p " 请输入Nginx监听端口[100-65535的一个数字，默认443]：" PORT
+        read -p " select nginx port[default 443]：" PORT
         [[ -z "${PORT}" ]] && PORT=443
         if [ "${PORT:0:1}" = "0" ]; then
-            colorEcho ${BLUE}  " 端口不能以0开头"
+            colorEcho ${BLUE}  " port format incorrect"
             exit 1
         fi
-        colorEcho ${BLUE}  " Nginx端口：$PORT"
+        colorEcho ${BLUE}  " Nginx port：$PORT"
         XPORT=`shuf -i10000-65000 -n1`
     fi
 
     if [[ "$KCP" = "true" ]]; then
         echo ""
-        colorEcho $BLUE " 请选择伪装类型："
-        echo "   1) 无"
-        echo "   2) BT下载"
-        echo "   3) 视频通话"
-        echo "   4) 微信视频通话"
+        colorEcho $BLUE " select camouflage type："
+        echo "   1) none"
+        echo "   2) bt download"
+        echo "   3) video chat"
+        echo "   4) wechat video chat"
         echo "   5) dtls"
         echo "   6) wiregard"
-        read -p "  请选择伪装类型[默认：无]：" answer
+        read -p "  select camouflage type[default：none]：" answer
         case $answer in
             2)
                 HEADER_TYPE="utp"
@@ -353,9 +353,9 @@ getData() {
 
     if [[ "$TROJAN" = "true" ]]; then
         echo ""
-        read -p " 请设置trojan密码（不输则随机生成）:" PASSWORD
+        read -p " trojan password（press enter use random password）:" PASSWORD
         [[ -z "$PASSWORD" ]] && PASSWORD=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 16 | head -n 1`
-        colorEcho $BLUE " trojan密码：$PASSWORD"
+        colorEcho $BLUE " trojan password：$PASSWORD"
     fi
 
     if [[ "$XTLS" = "true" ]]; then
