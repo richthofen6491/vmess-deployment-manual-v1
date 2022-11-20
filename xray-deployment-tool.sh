@@ -497,14 +497,14 @@ module_hotfixes=true' > /etc/yum.repos.d/nginx.repo
         fi
         $CMD_INSTALL nginx
         if [[ "$?" != "0" ]]; then
-            colorEcho $RED " Nginx安装失败，请到 https://hijk.art 反馈"
+            colorEcho $RED " Nginx安装失败，请私信作者反馈"
             exit 1
         fi
         systemctl enable nginx
     else
         res=`which nginx 2>/dev/null`
         if [[ "$?" != "0" ]]; then
-            colorEcho $RED " 您安装了宝塔，请在宝塔后台安装nginx后再运行本脚本"
+            colorEcho $RED " 您安装了宝塔，Nginx安装失败"
             exit 1
         fi
     fi
@@ -536,7 +536,7 @@ getCert() {
         systemctl stop xray
         res=`netstat -ntlp| grep -E ':80 |:443 '`
         if [[ "${res}" != "" ]]; then
-            colorEcho ${RED}  " 其他进程占用了80或443端口，请先关闭再运行一键脚本"
+            colorEcho ${RED}  " 其他进程占用了80或443端口，请先关闭再运行"
             echo " 端口占用信息如下："
             echo ${res}
             exit 1
@@ -562,7 +562,7 @@ getCert() {
             ~/.acme.sh/acme.sh   --issue -d $DOMAIN --keylength ec-256 --pre-hook "nginx -s stop || { echo -n ''; }" --post-hook "nginx -c /www/server/nginx/conf/nginx.conf || { echo -n ''; }"  --standalone
         fi
         [[ -f ~/.acme.sh/${DOMAIN}_ecc/ca.cer ]] || {
-            colorEcho $RED " 获取证书失败，请复制上面的红色文字到 https://hijk.art 反馈"
+            colorEcho $RED " 获取证书失败"
             exit 1
         }
         CERT_FILE="/usr/local/etc/xray/${DOMAIN}.pem"
@@ -572,7 +572,7 @@ getCert() {
             --fullchain-file $CERT_FILE \
             --reloadcmd     "service nginx force-reload"
         [[ -f $CERT_FILE && -f $KEY_FILE ]] || {
-            colorEcho $RED " 获取证书失败，请到 https://hijk.art 反馈"
+            colorEcho $RED " 获取证书失败"
             exit 1
         }
     else
@@ -669,7 +669,7 @@ server {
     server_name ${DOMAIN};
     charset utf-8;
 
-    # ssl配置
+    # ssl
     ssl_protocols TLSv1.1 TLSv1.2;
     ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE:ECDH:AES:HIGH:!NULL:!aNULL:!MD5:!ADH:!RC4;
     ssl_ecdh_curve secp384r1;
@@ -785,13 +785,13 @@ installBBR() {
     fi
     result=$(lsmod | grep bbr)
     if [[ "$result" != "" ]]; then
-        colorEcho $BLUE " BBR模块已安装"
+        colorEcho $BLUE " BBR enabled already"
         INSTALL_BBR=false
         return
     fi
     res=`hostnamectl | grep -i openvz`
     if [[ "$res" != "" ]]; then
-        colorEcho $BLUE " openvz机器，跳过安装"
+        colorEcho $BLUE " openvz detected，skip"
         INSTALL_BBR=false
         return
     fi
@@ -801,12 +801,12 @@ installBBR() {
     sysctl -p
     result=$(lsmod | grep bbr)
     if [[ "$result" != "" ]]; then
-        colorEcho $GREEN " BBR模块已启用"
+        colorEcho $GREEN " BBR enabled"
         INSTALL_BBR=false
         return
     fi
 
-    colorEcho $BLUE " 安装BBR模块..."
+    colorEcho $BLUE " installing BBR..."
     if [[ "$PMT" = "yum" ]]; then
         if [[ "$V6_PROXY" = "" ]]; then
             rpm --import https://www.elrepo.org/RPM-GPG-KEY-elrepo.org
