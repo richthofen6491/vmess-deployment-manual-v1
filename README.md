@@ -1,4 +1,4 @@
-# 一个很简单的VMESS部署小教程
+# 一个很简单的VMESS部署小教程(Working in progress!)
 
 ## 零.事前准备与需求
 
